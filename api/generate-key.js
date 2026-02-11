@@ -1,5 +1,23 @@
 export default function handler(req, res) {
-    // Enable CORS
+    // Block browser access - only allow programmatic requests
+    const userAgent = req.headers['user-agent'] || '';
+    
+    // Check if it's a browser (contains common browser identifiers)
+    const isBrowser = userAgent.includes('Mozilla') || 
+                     userAgent.includes('Chrome') || 
+                     userAgent.includes('Safari') || 
+                     userAgent.includes('Firefox') || 
+                     userAgent.includes('Edge') ||
+                     !req.headers['user-agent']; // Block empty user agents too
+    
+    if (isBrowser) {
+        return res.status(403).json({ 
+            success: false, 
+            error: "Access denied - This API is for programmatic use only" 
+        });
+    }
+    
+    // Enable CORS but only for non-browser requests
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     
